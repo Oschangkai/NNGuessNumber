@@ -27,7 +27,7 @@ def ConvertToBitArray(value, num_bit):
 
     return bit_array
 
-
+# 數二進位數字中有幾個 1
 def Popcount(value):
 
      val = copy.deepcopy(value)
@@ -43,15 +43,15 @@ def Popcount(value):
 
      return count
 
-
+# 二進位轉換為十進位，並取最大值
 def BitToMaxNumber(bits):
-
+# ex: 把八位數二進位 -> 11111110
     maxNumber = 0
     while(bits > 0):
         maxNumber |= 1
         maxNumber <<= 1
         bits -= 1
-
+# ex: 把 11111110 -> 11111111
     maxNumber >>= 1
 
     return maxNumber
@@ -71,17 +71,19 @@ class NeuralNetwork(object):
         self.b2 = np.random.uniform(-1, 1, (self.outputNumber, 1))
         # print('W1 = ',self.W1, 'b1 = ',self.b1, 'W2 = ',self.W2, 'b2 = ',self.b2)
 
+#   Activation Function: Softmax - 將邏輯回歸轉換成一組機率，這機率合為一，好像是選擇題
     def Softmax(self, val):
         exps = np.exp(val - np.max(val))
         return exps / np.sum(exps, axis=0)
 
-    # Activation Function: ReLU - 去除小於 0 的結果
+#   Activation Function: ReLU - 去除小於 0 的結果
     def ReLU(self, val):
         return (val > 0) * val
 
     def deRelu(self, z):
         return (z > 0) * 1
 
+#   Activation Function: cross-entropy 會搭配著 Softmax 用，當作 Softmax 的失誤函數，看看 Softmax 出來的機率，與正確類別之間的誤差
     def cross_entropy(self, y) :
         #return -np.sum( y * np.log(self.out))
         for i in range(y.size):
@@ -130,6 +132,7 @@ class NeuralNetwork(object):
 
 if __name__ == "__main__":
 
+#   基本參數設定
     num_bits = 8 # 二進位的位數
     num_neurons = 64 # 神經元數量
     max_epoch = 1000 # 最多 Fitting 幾次
@@ -141,9 +144,10 @@ if __name__ == "__main__":
     print("bit number = %d, max value = %d"%(num_bits, max_value))
     print("num_training_samples = %d"%num_training_samples)
 
+#   Train
     x = np.random.randint(0, high = max_value,
                             size = (num_training_samples, 1))
-#   Train
+
     nn = NeuralNetwork(num_bits, num_neurons)
 
     loss = []
