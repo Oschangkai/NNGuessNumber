@@ -63,15 +63,15 @@ class NeuralNetwork(object):
         self.bitNumber = bitNumber
         self.num_neurons = num_neurons
         self.outputNumber = self.bitNumber + 1
-
+#       Input(z1) to Hidden layer(z2)
         self.W1 = np.random.uniform(-1, 1, (num_neurons, bitNumber))
         self.b1 = np.random.uniform(-1, 1, (num_neurons, 1))
-
+#       Hidden(z2) to Output layer(z3)
         self.W2 = np.random.uniform(-1, 1, (self.outputNumber, num_neurons))
         self.b2 = np.random.uniform(-1, 1, (self.outputNumber, 1))
-        # print('W1 = ',self.W1, 'b1 = ',self.b1, 'W2 = ',self.W2, 'b2 = ',self.b2)
 
-#   Activation Function: Softmax - 將邏輯回歸轉換成一組機率，這機率合為一，好像是選擇題
+
+#   Activation Function: Softmax - 將邏輯回歸轉換成一組機率，這機率和為一，好像是選擇題
     def Softmax(self, val):
         exps = np.exp(val - np.max(val))
         return exps / np.sum(exps, axis=0)
@@ -83,9 +83,9 @@ class NeuralNetwork(object):
     def deRelu(self, z):
         return (z > 0) * 1
 
-#   Activation Function: cross-entropy 會搭配著 Softmax 用，當作 Softmax 的失誤函數，看看 Softmax 出來的機率，與正確類別之間的誤差
+#   Loss Function: cross-entropy 會搭配著 Softmax 用，當作 Softmax 的失誤函數，看看 Softmax 出來的機率，與正確類別之間的誤差
     def cross_entropy(self, y) :
-        #return -np.sum( y * np.log(self.out))
+
         for i in range(y.size):
             if (0 != y[i]):
                 return -np.log(self.out[i])
@@ -121,7 +121,7 @@ class NeuralNetwork(object):
         z1_W_delta = z1_error.dot(self.x.T)
         z1_b_delta = z1_error
 
-        lr = 5e-3
+        lr = 5e-3 # 0.005
         self.W2 -= z3_W_delta * lr
         self.W1 -= z1_W_delta * lr
 
@@ -159,17 +159,12 @@ if __name__ == "__main__":
             y = Popcount(x[i])
             x_array = ConvertToBitArray(x[i], num_bits)
 
-            #print("value = %d, popcount = %d "%( x_array[i], y))
             out_array = nn.Forward(x_array)
 
             jj = 0
             for j in range(out_array.size):
                 if(out_array[j] > out_array[jj]):
                     jj = j
-             # print("predict bits = %d "% jj);
-
-            #np.set_printoptions(suppress = True)
-            #print("\npredicte = \n%s" % np.reshape(out_array, (bitNumber + 1, 1)) )
 
             yy = np.zeros((num_bits + 1, 1))
             yy[int(y)] = 1.0
@@ -178,21 +173,22 @@ if __name__ == "__main__":
                 err_count += 1
 
             loss.append( nn.Backward(yy))
+##      END for(i)
 
-        error_rate.append((100.0 * err_count) / np.size(x, 0))
+        error_rate.append((100.0 * err_count) / np.size(x, 0)) # error rate = num. of error / num. of el in set(800)
 
         # %4.3f => 總共有四位數，小數後共有三位
         print("epoch = %d, training error rate = %4.3f%%, loss = %6.5f"
                 % (epoch, error_rate[-1], loss[-1]) )
 
 #       兩個停止 epoch 的條件
-#       1. 
+#       1. 最後兩次的 loss <= 0.0001 且 最後一次的 loss <= 0.0001
         if(abs(loss[-1] - loss[-2]) <= 1e-4 and loss[-1] <= 1e-4):
             break
 #       2. 誤差值 < 0.2
         if(error_rate[-1] <= 0.2):
             break;
-# END FOR
+##  END for(epoch)
 
 # 畫圖
     step = int(num_training_samples)
