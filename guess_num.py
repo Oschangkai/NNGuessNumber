@@ -172,7 +172,7 @@ if __name__ == "__main__":
             if(int(y) != jj):
                 err_count += 1
 
-            loss.append( nn.Backward(yy))
+            loss.append(nn.Backward(yy))
 ##      END for(i)
 
         error_rate.append((100.0 * err_count) / np.size(x, 0)) # error rate = num. of error / num. of el in set(800)
